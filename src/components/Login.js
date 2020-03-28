@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Redirect } from 'react-router-dom';
-import { AuthConsumer } from "../context/auth";
 
 export default class Login extends Component {
   constructor(props) {
@@ -36,7 +35,7 @@ export default class Login extends Component {
     })
     .then(data => { 
         sessionStorage.setItem("session_token", data.session_token)
-        // this.props.history.push('/dashboard');
+        this.props.login()
         })
     .then(() => this.setState(() => ({
         isAuth: true
@@ -48,13 +47,11 @@ export default class Login extends Component {
   }
   render() {
 
-    if (this.state.toDashboard === true) {
+    if (this.state.isAuth === true) {
         return <Redirect to='/dashboard' />
       }
 
     return (
-    <AuthConsumer>
-        {({ isAuth }) => (
         <div>
             <h1>Login</h1>
             <form onSubmit={this.onSubmit}>
@@ -76,8 +73,6 @@ export default class Login extends Component {
             <input type="submit" value="Submit"/>
             </form>
         </div>
-        )}
-    </AuthConsumer>
     )
     ;
   }

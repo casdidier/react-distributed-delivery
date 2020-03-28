@@ -7,16 +7,11 @@ class AuthProvider extends React.Component {
 
   constructor() {
     super()
-    this.login  = this.login.bind(this)
-    this.logout = this.logout.bind(this)
+    this.login = this.login.bind(this)
   }
 
   login() {
     this.setState({ isAuth: true })
-  }
-
-  logout() {
-    this.setState({ isAuth: false })
   }
 
   render() {
@@ -25,7 +20,6 @@ class AuthProvider extends React.Component {
         value={{
           isAuth: this.state.isAuth,
           login : this.login,
-          logout: this.logout
         }}
       >
         {this.props.children}

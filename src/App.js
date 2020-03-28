@@ -1,8 +1,9 @@
 import React from 'react';
 import {Route, Switch, Link, BrowserRouter as Router } from 'react-router-dom';
+
 import Home from './components/Home'
-import Login from './components/Login'
 import Dashboard from './components/Dashboard/Dashboard'
+import LoginContainer from './components/LoginContainer'
 import { AuthProvider } from './context/auth'
 import PrivateRoute from './PrivateRoute'
 
@@ -10,24 +11,10 @@ import './App.css';
 
 class App extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      isAuth: false
-    };
-
-    this.login = this.login.bind(this);
-  }
-
-  login() {
-    this.setState({isAuth: true});
-  }
-
   render() {
-
     return (
       <div className="App">
-        <AuthProvider value={this.state.isAuth}>
+        <AuthProvider>
         <div>
           <Router>
           <div>
@@ -42,7 +29,8 @@ class App extends React.Component {
             <Switch>
               <Route path="/" exact component={Home} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
-              <Route path="/login" component={Login} />
+              {/* <Route path="/login" component={Login} /> */}
+              <Route path="/login" component={LoginContainer} />
             </Switch>
           </Router>
         </div>
