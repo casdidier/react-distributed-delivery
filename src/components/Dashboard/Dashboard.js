@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import StreamChart from './StreamChart';
-import { managerData, yearLabels, nationalAverageData } from "./mockData";
+import StreamChart from '../StreamChart/StreamChart';
+import { managerData, yearLabels, nationalAverageData } from "../../mockData";
 import classes from "./Dashboard.module.css";
 export default class Dashboard extends Component {
 
