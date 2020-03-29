@@ -3,7 +3,8 @@ import React from 'react'
 const AuthContext = React.createContext()
 
 class AuthProvider extends React.Component {
-  state = { isAuth: false }
+  // TODO: remove fake data
+  state = { isAuth: true }
 
   constructor() {
     super()

@@ -37,9 +37,6 @@ export default class Login extends Component {
         sessionStorage.setItem("session_token", data.session_token)
         this.props.login()
         })
-    .then(() => this.setState(() => ({
-        isAuth: true
-      })))
     .catch(err => {
       console.error(err);
       alert('Error logging in please try again');
@@ -47,7 +44,7 @@ export default class Login extends Component {
   }
   render() {
 
-    if (this.state.isAuth === true) {
+    if (this.props.isAuth === true) {
         return <Redirect to='/dashboard' />
       }
 
