@@ -1,8 +1,12 @@
 import React, { Component } from 'react'
 import StackedAreaChart from '../Charts/StackedAreaChart';
-
+import SimpleLineChart from '../Charts/SimpleLineChart';
+import TinyAreaChart from '../Charts/TinyAreaChart';
+import DatePicker from "react-datepicker";
 import { convertUnixTimeToDate, convertUnixTimeToChartDate, convertToGbps } from '../../tools';
-import classes from './Dashboard.module.css';
+ 
+import classes from "./Dashboard.module.css";
+import "react-datepicker/dist/react-datepicker.css";
 
 const mock =  [
     {date: 'date 1', p2p: 4000, cdn: 2400},
@@ -20,15 +24,19 @@ export default class Dashboard extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data         : mock,
+            bandwidthData: [],
+            audienceData : [],
             session_token: localStorage.getItem('session_token'),
-            from         : 1584450601773,
-            to           : 1585426201773,
+            // date 15 days before
+            from     : new Date().getTime() - 15*86400000,
+            to       : Date.now(),
+            startDate: new Date(),
+            endDate  : new Date(),
             };
 
         this.retrieveData = this.retrieveData.bind(this)
     }
-    retrieveData() {
+    retrieveData(URL, transform, dataLabel) {
 
         const body = {
             session_token: this.state.session_token,
@@ -36,7 +44,7 @@ export default class Dashboard extends Component {
             to           : this.state.to,
         }
 
-        fetch('http://wwww.localhost:3000/bandwidth', {
+        fetch(URL, {
             method : 'POST',
             body   : JSON.stringify(body),
             headers: {
@@ -51,7 +59,10 @@ export default class Dashboard extends Component {
                 throw error;
             }
             })
-            .then(data => this.setState({data: this.transformData(data)}))
+            .then(data => {
+                let       stateData  = {};
+                stateData[dataLabel] = transform(data);
+                this.setState(stateData)})
             .catch(err => {
             console.error(err);
             alert('Data could not be retrieved from server');
@@ -59,9 +70,13 @@ export default class Dashboard extends Component {
 
     }
 
-    transformData(bandwidthData) {
+    retrieveBandwidthData = () => this.retrieveData('http://wwww.localhost:3000/bandwidth', this.transformBandwidthData, 'bandwidthData');
+    retrieveAudienceData  = () => this.retrieveData('http://wwww.localhost:3000/audience', this.transformDataAudience, 'audienceData');
+
+
+    transformBandwidthData(data) {
   
-        const [cdnData, p2pData] = Object.values(bandwidthData);
+        const [cdnData, p2pData] = Object.values(data);
         const transformedData    = [];
         
         for (var i=0; i<cdnData.length; i++) {
@@ -77,16 +92,55 @@ export default class Dashboard extends Component {
         return transformedData;
     }
 
+    transformDataAudience(data) {
+  
+        const audienceData    = Object.values(data)[0];
+        const transformedData = [];
+        
+        for (var i=0; i<audienceData.length; i++) {
+          const entry           = {};
+                entry.humandate = convertUnixTimeToDate(audienceData[i][0]);
+                entry.chartDate = convertUnixTimeToChartDate(audienceData[i][0]);
+                entry.viewers   = audienceData[i][1];
+          
+          transformedData.push(entry);
+        }
+
+        return transformedData;
+    }
+
+    handleChangeStartDate = date => {
+        this.setState({
+          from: date
+        });
+      };
+
+      handleChangeEndDate = date => {
+        this.setState({
+          to: date
+        });
+      };
+
     render() {
-        const { data } = this.state;
+        const { audienceData, bandwidthData } = this.state;
         return (
-            <div className={classes.container}>
-            <header>
-                {/* <img src={chartIcon} alt="bar chart icon" /> */}
+            <div>
                 <h1>Stream Dashboard</h1>
-            </header>
-                <StackedAreaChart data = {data}/>
-                <button onClick={this.retrieveData}></button>
+                <StackedAreaChart data = {bandwidthData}/>
+                <SimpleLineChart data={audienceData}/>
+                <div className = {classes.containerTiny}>
+                    <DatePicker
+                        selected = {this.state.from}
+                        onChange = {this.handleChangeStartDate}
+                    />
+                    <TinyAreaChart data={bandwidthData}/>
+                    <DatePicker
+                        selected = {this.state.to}
+                        onChange = {this.handleChangeEndDate}
+                    />
+                </div>
+                <button onClick={this.retrieveBandwidthData}></button>
+                <button onClick={this.retrieveAudienceData}></button>
             </div>
         )
     }

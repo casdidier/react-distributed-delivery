@@ -9,6 +9,12 @@
   flex-direction : column;
 }
 
+.containerTiny {
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+}
+
 header {
   display    : flex;
   align-items: center;
@@ -54,4 +60,9 @@ button[value='lastquarter'] {
   border-left              : none;
   border-top-left-radius   : 0;
   border-bottom-left-radius: 0;
+}
+
+.line {
+  width: 33%;
+  float: left;
 }
