@@ -3,22 +3,11 @@ import StackedAreaChart from '../Charts/StackedAreaChart';
 import SimpleLineChart from '../Charts/SimpleLineChart';
 import TinyAreaChart from '../Charts/TinyAreaChart';
 import DatePicker from "react-datepicker";
-import { convertUnixTimeToDate, convertUnixTimeToChartDate, convertToGbps } from '../../tools';
+import { convertUnixTimeToDate, convertUnixTimeToChartDate,
+     convertToGbps, convertDateToUnixTimestamp } from '../../tools';
  
 import classes from "./Dashboard.module.css";
 import "react-datepicker/dist/react-datepicker.css";
-
-const mock =  [
-    {date: 'date 1', p2p: 4000, cdn: 2400},
-    {date: 'date 1', p2p: 3000, cdn: 1398},
-    {date: 'date 1', p2p: 2000, cdn: 9800},
-    {date: 'date 1', p2p: 2780, cdn: 3908},
-    {date: 'date 1', p2p: 1890, cdn: 4800},
-    {date: 'date 1', p2p: 2390, cdn: 3800},
-    {date: 'date 1', p2p: 3490, cdn: 4300},
-];
-
-
 
 export default class Dashboard extends Component {
     constructor(props) {
@@ -27,15 +16,28 @@ export default class Dashboard extends Component {
             bandwidthData: [],
             audienceData : [],
             session_token: localStorage.getItem('session_token'),
-            // date 15 days before
-            from     : new Date().getTime() - 15*86400000,
-            to       : Date.now(),
-            startDate: new Date(),
-            endDate  : new Date(),
+            from         : new Date().getTime() - 15*86400000,      // date 15 days before
+            to           : Date.now(),
+            startDate    : new Date(),
+            endDate      : new Date(),
             };
 
         this.retrieveData = this.retrieveData.bind(this)
     }
+
+    retrieveBandwidthData = () => this.retrieveData('http://wwww.localhost:3000/bandwidth', this.transformBandwidthData, 'bandwidthData');
+    retrieveAudienceData  = () => this.retrieveData('http://wwww.localhost:3000/audience', this.transformDataAudience, 'audienceData');
+
+    componentDidMount() {
+        this.fetchData();
+    }
+
+    fetchData() {
+        this.retrieveBandwidthData();
+        this.retrieveAudienceData();
+    }
+    
+    
     retrieveData(URL, transform, dataLabel) {
 
         const body = {
@@ -70,10 +72,6 @@ export default class Dashboard extends Component {
 
     }
 
-    retrieveBandwidthData = () => this.retrieveData('http://wwww.localhost:3000/bandwidth', this.transformBandwidthData, 'bandwidthData');
-    retrieveAudienceData  = () => this.retrieveData('http://wwww.localhost:3000/audience', this.transformDataAudience, 'audienceData');
-
-
     transformBandwidthData(data) {
   
         const [cdnData, p2pData] = Object.values(data);
@@ -88,7 +86,6 @@ export default class Dashboard extends Component {
           
           transformedData.push(entry);
         }
-
         return transformedData;
     }
 
@@ -105,21 +102,22 @@ export default class Dashboard extends Component {
           
           transformedData.push(entry);
         }
-
         return transformedData;
     }
 
     handleChangeStartDate = date => {
         this.setState({
-          from: date
+          from: convertDateToUnixTimestamp(date)
         });
+        this.fetchData();
       };
 
-      handleChangeEndDate = date => {
+    handleChangeEndDate = date => {
         this.setState({
-          to: date
+            to: convertDateToUnixTimestamp(date)
         });
-      };
+        this.fetchData();
+    };
 
     render() {
         const { audienceData, bandwidthData } = this.state;
@@ -139,8 +137,8 @@ export default class Dashboard extends Component {
                         onChange = {this.handleChangeEndDate}
                     />
                 </div>
-                <button onClick={this.retrieveBandwidthData}></button>
-                <button onClick={this.retrieveAudienceData}></button>
+                {/* <button onClick={this.retrieveBandwidthData}></button>
+                <button onClick={this.retrieveAudienceData}></button> */}
             </div>
         )
     }
