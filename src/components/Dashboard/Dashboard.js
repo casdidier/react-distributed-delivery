@@ -15,8 +15,8 @@ export default class Dashboard extends Component {
         this.state = {
             bandwidthData: [],
             audienceData : [],
-            session_token: localStorage.getItem('session_token'),
-            from         : new Date().getTime() - 15*86400000,      // date 15 days before
+            session_token: sessionStorage.getItem('session_token'),
+            from         : new Date().getTime() - 15*86400000,        // date 15 days before
             to           : Date.now(),
             startDate    : new Date(),
             endDate      : new Date(),
@@ -36,7 +36,6 @@ export default class Dashboard extends Component {
         this.retrieveBandwidthData();
         this.retrieveAudienceData();
     }
-    
     
     retrieveData(URL, transform, dataLabel) {
 
@@ -69,7 +68,6 @@ export default class Dashboard extends Component {
             console.error(err);
             alert('Data could not be retrieved from server');
             })
-
     }
 
     transformBandwidthData(data) {
@@ -137,8 +135,6 @@ export default class Dashboard extends Component {
                         onChange = {this.handleChangeEndDate}
                     />
                 </div>
-                {/* <button onClick={this.retrieveBandwidthData}></button>
-                <button onClick={this.retrieveAudienceData}></button> */}
             </div>
         )
     }

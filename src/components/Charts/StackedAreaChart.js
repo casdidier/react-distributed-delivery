@@ -4,29 +4,6 @@ import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,ReferenceLine
 } from 'recharts';
 
-const renderTooltipContent = (o) => {
-	const { payload, label } = o;
-	const humanDate          = payload.humanDate;
-  
-  return (
-    <div>
-  	<div className="customized-tooltip-content">
-    	{/* <p className="date">{`${label} (${humanDate})`}</p> */}
-      <p className="total">{`${label} ${humanDate}`}</p>
-      <ul className="list">
-      	{
-        	payload.map((entry, index) => (
-          	<li key={`item-${index}`} style={{color: entry.color}}>
-            	{`${entry.name}: ${entry.value}`}
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-    </div>
-  );
-};
-
 const maxBandwidth = (data, typeData) => Math.max.apply(Math, data.map(function(o) { return o[typeData]; }));
 
 const maxThroughput = (data) => maxBandwidth(data, 'cdn') + maxBandwidth(data, 'p2p');

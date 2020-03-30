@@ -29,7 +29,6 @@ class App extends React.Component {
             <Switch>
               <Route path="/" exact component={Home} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
-              {/* <Route path="/login" component={Login} /> */}
               <Route path="/login" component={LoginContainer} />
             </Switch>
           </Router>

@@ -4,7 +4,7 @@ const AuthContext = React.createContext()
 
 class AuthProvider extends React.Component {
   // TODO: remove fake data
-  state = { isAuth: true }
+  state = { isAuth: false }
 
   constructor() {
     super()
